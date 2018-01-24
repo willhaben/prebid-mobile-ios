@@ -66,7 +66,6 @@ static int const kPCAttachTopBidMaxTimeoutMS = 1500;
                            andTimeout:(int)timeoutInMS
                     completionHandler:(nullable void (^)(void))handler;
 
-- (void)setBidOnAdObject:(nonnull NSObject *)adObject;
 - (void)clearBidOnAdObject:(nonnull NSObject *)adObject;
 
 @end

@@ -13,7 +13,6 @@
  limitations under the License.
  */
 
-#import "NSObject+Prebid.h"
 #import "NSString+Extension.h"
 #import "NSTimer+Extension.h"
 #import "PBBidManager.h"
@@ -265,74 +264,6 @@ static dispatch_once_t onceToken;
         return YES;
     }
     return NO;
-}
-
-- (void)setBidOnAdObject:(NSObject *)adObject {
-    [self clearBidOnAdObject:adObject];
-
-    if (adObject.pb_identifier) {
-        NSMutableArray *mutableKeywords;
-        NSString *keywords = @"";
-        SEL getKeywords = NSSelectorFromString(@"keywords");
-        if ([adObject respondsToSelector:getKeywords]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-            keywords = (NSString *)[adObject performSelector:getKeywords];
-        }
-        if (keywords.length) {
-            mutableKeywords = [[keywords componentsSeparatedByString:@","] mutableCopy];
-        }
-        if (!mutableKeywords) {
-            mutableKeywords = [[NSMutableArray alloc] init];
-        }
-        PBAdUnit *adUnit = adObject.pb_identifier;
-        NSDictionary<NSString *, NSString *> *keywordsPairs = [self keywordsForWinningBidForAdUnit:adUnit];
-        for (id key in keywordsPairs) {
-            id value = [keywordsPairs objectForKey:key];
-            if (value) {
-                [mutableKeywords addObject:[NSString stringWithFormat:@"%@:%@", key, value]];
-            }
-        }
-        if ([[mutableKeywords componentsJoinedByString:@","] length] > 4000) {
-            PBLogDebug(@"Bid to MoPub is too long");
-        } else {
-            SEL setKeywords = NSSelectorFromString(@"setKeywords:");
-            if ([adObject respondsToSelector:setKeywords]) {
-                NSString *keywordsToSet = [mutableKeywords componentsJoinedByString:@","];
-                [adObject performSelector:setKeywords withObject:keywordsToSet];
-#pragma clang diagnostic pop
-            }
-        }
-    } else {
-        PBLogDebug(@"No bid available to pass to MoPub");
-    }
-}
-
-- (void)clearBidOnAdObject:(NSObject *)adObject {
-    NSString *keywordsString = @"";
-    SEL getKeywords = NSSelectorFromString(@"keywords");
-    if ([adObject respondsToSelector:getKeywords]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        keywordsString = (NSString *)[adObject performSelector:getKeywords];
-    }
-    if (keywordsString.length) {
-        NSArray *keywords = [keywordsString componentsSeparatedByString:@","];
-        NSMutableArray *mutableKeywords = [keywords mutableCopy];
-        [keywords enumerateObjectsUsingBlock:^(NSString *keyword, NSUInteger idx, BOOL *stop) {
-            for (NSString *reservedKey in [PBKeywordsManager reservedKeys]) {
-                if ([keyword hasPrefix:reservedKey]) {
-                    [mutableKeywords removeObject:keyword];
-                    return;
-                }
-            }
-        }];
-        SEL setKeywords = NSSelectorFromString(@"setKeywords:");
-        if ([adObject respondsToSelector:setKeywords]) {
-            [adObject performSelector:setKeywords withObject:[mutableKeywords componentsJoinedByString:@","]];
-#pragma clang diagnostic pop
-        }
-    }
 }
 
 @end
