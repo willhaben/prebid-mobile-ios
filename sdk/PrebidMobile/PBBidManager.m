@@ -186,12 +186,6 @@ static dispatch_once_t onceToken;
     }
 }
 
--(void) loadOnSecureConnection:(BOOL) secureConnection {
-    if(self.adServer == PBPrimaryAdServerMoPub){
-        self.demandAdapter.isSecure = secureConnection;
-    }
-}
-
 #pragma mark Internal Methods
 
 - (void)registerAdUnit:(PBAdUnit *)adUnit {

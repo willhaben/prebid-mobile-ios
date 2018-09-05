@@ -34,13 +34,4 @@
                withHost:(PBServerHost)host
      andPrimaryAdServer:(PBPrimaryAdServerType)adServer;
 
-+ (void)setBidKeywordsOnAdObject:(nonnull id)adObject withAdUnitId:(nonnull NSString *)adUnitId;
-
-+ (void)setBidKeywordsOnAdObject:(nonnull id)adObject
-                    withAdUnitId:(nonnull NSString *)adUnitIdentifier
-                     withTimeout:(int)timeoutInMilliseconds
-               completionHandler:(nullable void (^)(void))handler;
-
-+ (void) shouldLoadOverSecureConnection:(BOOL) secureConnection;
-
 @end

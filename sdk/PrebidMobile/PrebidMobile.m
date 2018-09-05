@@ -25,36 +25,4 @@
     [[PBBidManager sharedInstance] registerAdUnits:adUnits withAccountId:accountId withHost:host andPrimaryAdServer:adServer];
 }
 
-+ (void)setBidKeywordsOnAdObject:(nonnull id)adObject
-                    withAdUnitId:(nonnull NSString *)adUnitId {
-    PBLogDebug(@"Set bid keywords on ad object for ad unit %@", adUnitId);
-    PBAdUnit *__nullable adUnit = [[PBBidManager sharedInstance] adUnitByIdentifier:adUnitId];
-    [[PBBidManager sharedInstance] assertAdUnitRegistered:adUnitId];
-    
-    SEL setPbIdentifier = NSSelectorFromString(@"setPb_identifier:");
-    if ([adObject respondsToSelector:setPbIdentifier]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [adObject performSelector:setPbIdentifier withObject:adUnit];
-#pragma clang diagnostic pop
-    }
-}
-
-+ (void)setBidKeywordsOnAdObject:(id)adObject
-                    withAdUnitId:(NSString *)adUnitIdentifier
-                     withTimeout:(int)timeoutInMilliseconds
-               completionHandler:(void (^)(void))handler {
-    void (^completionHandler)(void) = ^{
-        [self setBidKeywordsOnAdObject:adObject withAdUnitId:adUnitIdentifier];
-        handler();
-    };
-    [[PBBidManager sharedInstance] attachTopBidHelperForAdUnitId:adUnitIdentifier
-                                                      andTimeout:timeoutInMilliseconds
-                                               completionHandler:completionHandler];
-}
-
-+ (void) shouldLoadOverSecureConnection:(BOOL) secureConnection {
-    [[PBBidManager sharedInstance] loadOnSecureConnection:secureConnection];
-}
-
 @end
