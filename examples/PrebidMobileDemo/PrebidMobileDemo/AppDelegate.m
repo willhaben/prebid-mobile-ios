@@ -1,4 +1,4 @@
-/*   Copyright 2017 APPNEXUS INC
+/*   Copyright 2017 Prebid.org, Inc.
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@
 #import <PrebidMobile/PBInterstitialAdUnit.h>
 #import <PrebidMobile/PBTargetingParams.h>
 #import <PrebidMobile/PrebidMobile.h>
+#import <PrebidMobile/PBLogging.h>
 #import "Constants.h"
 #import "SettingsViewController.h"
+#import <CMPReference/CMPStorage.h>
 
 @interface AppDelegate ()
 
@@ -64,7 +66,7 @@
 
         [self setPrebidTargetingParams];
 
-        [PrebidMobile registerAdUnits:@[adUnit1, adUnit2] withAccountId:kAccountId];
+        [PrebidMobile registerAdUnits:@[adUnit1, adUnit2] withAccountId:kAccountId withHost:kPBServerHost andPrimaryAdServer:PBPrimaryAdServerDFP];
     } @catch (PBException *ex) {
         NSLog(@"%@",[ex reason]);
     } @finally {
@@ -86,9 +88,13 @@
 
 - (void)setPrebidTargetingParams {
     [[PBTargetingParams sharedInstance] setAge:25];
-    [[PBTargetingParams sharedInstance] setGender:PBTargetingParamsGenderFemale];
-    [[PBTargetingParams sharedInstance] setCustomTargeting:@"country" withValues:@[@"india", @"malaysia"]];
-    [[PBTargetingParams sharedInstance] setCustomTargeting:@"race" withValues:@[@"asian", @"hispanic", @"asian"]];
+    [[PBTargetingParams sharedInstance] setGender:PBTargetingParamsGenderFemale];    
+    CMPStorage *consentStorageVC = [[CMPStorage alloc] init];
+    
+    if(consentStorageVC.cmpPresent  && consentStorageVC.consentString.length != 0){
+        [[PBTargetingParams sharedInstance] setSubjectToGDPR:YES];
+        [[PBTargetingParams sharedInstance] setGdprConsentString:consentStorageVC.consentString];
+    }
 }
 
 // Location Manager Delegate Methods

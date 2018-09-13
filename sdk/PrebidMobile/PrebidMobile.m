@@ -1,4 +1,4 @@
-/*   Copyright 2017 APPNEXUS INC
+/*   Copyright 2017 Prebid.org, Inc.
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -13,13 +13,16 @@
  limitations under the License.
  */
 
-#import "PBBidManager.h"
 #import "PrebidMobile.h"
+#import "PBLogging.h"
 
 @implementation PrebidMobile
 
-+ (void)registerAdUnits:(nonnull NSArray<PBAdUnit *> *)adUnits withAccountId:(nonnull NSString *)accountId {
-    [[PBBidManager sharedInstance] registerAdUnits:adUnits withAccountId:accountId];
++ (void)registerAdUnits:(nonnull NSArray<PBAdUnit *> *)adUnits
+          withAccountId:(nonnull NSString *)accountId
+               withHost:(PBServerHost)host
+     andPrimaryAdServer:(PBPrimaryAdServerType)adServer {
+    [[PBBidManager sharedInstance] registerAdUnits:adUnits withAccountId:accountId withHost:host andPrimaryAdServer:adServer];
 }
 
 + (void)setBidKeywordsOnAdObject:(nonnull id)adObject
@@ -48,6 +51,10 @@
     [[PBBidManager sharedInstance] attachTopBidHelperForAdUnitId:adUnitIdentifier
                                                       andTimeout:timeoutInMilliseconds
                                                completionHandler:completionHandler];
+}
+
++ (void) shouldLoadOverSecureConnection:(BOOL) secureConnection {
+    [[PBBidManager sharedInstance] loadOnSecureConnection:secureConnection];
 }
 
 @end
