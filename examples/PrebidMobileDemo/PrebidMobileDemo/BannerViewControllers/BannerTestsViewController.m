@@ -1,4 +1,4 @@
-/*   Copyright 2017 APPNEXUS INC
+/*   Copyright 2017 Prebid.org, Inc.
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 #import <GoogleMobileAds/DFPBannerView.h>
 #import "MPAdView.h"
 #import "PrebidMobile/PrebidMobile.h"
+
 
 @interface BannerTestsViewController () <GADBannerViewDelegate, MPAdViewDelegate>
 
@@ -53,6 +54,7 @@
     _adContainerView = [[UIView alloc] initWithFrame:CGRectMake(([[UIScreen mainScreen] bounds].size.width - width) / 2, 100, width, height)];
     [self.view addSubview:_adContainerView];
     
+    
     if ([adServer isEqualToString:kMoPubAdServer]) {
         _mopubAdView = [[MPAdView alloc] initWithAdUnitId:kMoPubBannerAdUnitId
                                                      size:CGSizeMake(width, height)];
@@ -71,7 +73,7 @@
         [_adContainerView addSubview:_dfpAdView];
         
         [PrebidMobile setBidKeywordsOnAdObject:_dfpAdView withAdUnitId:kAdUnit1Id withTimeout:600 completionHandler:^{
-            [_dfpAdView loadRequest:[DFPRequest request]];
+            [self.dfpAdView loadRequest:[DFPRequest request]];
         }];
     }
 }

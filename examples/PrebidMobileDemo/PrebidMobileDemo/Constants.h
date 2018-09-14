@@ -1,4 +1,4 @@
-/*   Copyright 2017 APPNEXUS INC
+/*   Copyright 2017 Prebid.org, Inc.
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ extern NSString *const kAdServer;
 extern NSString *const kAdType;
 extern NSString *const kPlacementId;
 extern NSString *const kSize;
+extern NSString *const kGDPRString;
 
 extern NSString *const kDefaultPlacementId;
 extern NSString *const kDefaultSize;
@@ -44,6 +45,7 @@ extern NSString *const kDFPInterstitialAdUnitId;
 extern NSString *const kAccountId;
 extern NSString *const kAdUnit1ConfigId;
 extern NSString *const kAdUnit2ConfigId;
+extern NSUInteger const kPBServerHost;
 
 extern NSString *const kAdUnit1Id;
 extern NSString *const kAdUnit2Id;

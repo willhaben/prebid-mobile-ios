@@ -1,4 +1,4 @@
-/*   Copyright 2017 APPNEXUS INC
+/*   Copyright 2017 Prebid.org, Inc.
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,18 +14,28 @@
  */
 
 #import "PBTargetingParams.h"
+#import "PBConstants.h"
 
 @interface PBTargetingParams ()
 
 @property (nonatomic, strong, readwrite) NSMutableDictionary<NSString *, NSArray *> *__nullable customKeywords;
+@property (nonatomic, strong, readwrite) NSMutableDictionary<NSString *, NSArray *> *__nullable userKeywords;
+
+@property (nonatomic, readwrite) BOOL isGDPREnabledHere;
 
 @end
 
 @implementation PBTargetingParams
 
+
 - (instancetype)init {
     if (self = [super init]) {
         _locationPrecision = (NSInteger)-1;
+        
+        _customKeywords = [[NSMutableDictionary alloc] init];
+        _userKeywords = [[NSMutableDictionary alloc] init];
+        _isGDPREnabledHere = NO;
+        
     }
     return self;
 }
@@ -48,7 +58,7 @@ static dispatch_once_t onceToken;
 - (void)setCustomTargeting:(nonnull NSString *)key
                  withValue:(nonnull NSString *)value {
     if (_customKeywords == nil) {
-        _customKeywords = [[NSMutableDictionary alloc] init];
+        return;
     }
 
     NSArray *valueArray = [NSArray arrayWithObject:value];
@@ -58,7 +68,7 @@ static dispatch_once_t onceToken;
 - (void)setCustomTargeting:(nonnull NSString *)key
                 withValues:(nonnull NSArray *)values {
     if (_customKeywords == nil) {
-        _customKeywords = [[NSMutableDictionary alloc] init];
+        return;
     }
 
     // remove duplicate values from the array
@@ -88,6 +98,58 @@ static dispatch_once_t onceToken;
     }
 }
 
+#pragma mark User Keywords
+
+- (void)setUserKeywords:(nonnull NSString *)key
+                 withValue:(NSString * _Nullable)value {
+    if (_userKeywords == nil) {
+        return;
+    }
+    
+    if(value == nil || value == NULL){
+        value = @"";
+    }
+    
+    NSArray *valueArray = [NSArray arrayWithObject:value];
+    _userKeywords[key] = valueArray;
+}
+
+- (void)setUserKeywords:(nonnull NSString *)key
+                withValues:(NSArray * _Nullable)values {
+    if (_userKeywords == nil) {
+        return;
+    }
+    
+    
+    // remove duplicate values from the array
+    NSArray *valueArray = [[NSSet setWithArray:values] allObjects];
+    _userKeywords[key] = valueArray;
+}
+
+- (nullable NSDictionary *)userKeywords {
+    return _userKeywords;
+}
+
+- (void)removeUserKeywords {
+    if (_userKeywords != nil) {
+        [_userKeywords removeAllObjects];
+        _userKeywords = nil;
+    }
+}
+
+- (void)removeUserKeywordWithKey:(NSString *)key {
+    if (_userKeywords != nil) {
+        if (_userKeywords[key] != nil) {
+            [_userKeywords removeObjectForKey:key];
+        }
+        if ([_userKeywords count] == 0) {
+            _userKeywords = nil;
+        }
+    }
+}
+
+#pragma end
+
 - (void)setLocation:(CLLocation *)location {
     _location = location;
 }
@@ -98,6 +160,41 @@ static dispatch_once_t onceToken;
 
 - (void)setItunesID:(NSString *)itunesID {
     _itunesID = itunesID;
+}
+
+-(void) setSubjectToGDPR:(BOOL)subjectToGDPR{
+    [[NSUserDefaults standardUserDefaults] setBool:subjectToGDPR forKey:PB_GDPR_SubjectToConsent];
+    self.isGDPREnabledHere = YES;
+}
+
+-(void) setGdprConsentString:(NSString *)gdprConsentString{
+    
+    [[NSUserDefaults standardUserDefaults] setObject:gdprConsentString forKey:PB_GDPR_ConsentString];
+    self.isGDPREnabledHere = YES;
+}
+
+-(BOOL) subjectToGDPR {
+    BOOL savedGDPR = YES;
+    if([[NSUserDefaults standardUserDefaults] objectForKey:PB_GDPR_SubjectToConsent] != nil){
+        
+        savedGDPR = [[NSUserDefaults standardUserDefaults] boolForKey:PB_GDPR_SubjectToConsent];
+    } else if([[NSUserDefaults standardUserDefaults] objectForKey:IAB_GDPR_SubjectToConsent] != nil){
+        NSString *stringValue = [[NSUserDefaults standardUserDefaults] objectForKey:IAB_GDPR_SubjectToConsent];
+        savedGDPR = [stringValue boolValue];
+    }
+    return savedGDPR;
+}
+
+-(BOOL) isGDPREnabled {
+    return self.isGDPREnabledHere;
+}
+
+-(NSString *) gdprConsentString{
+    if(self.isGDPREnabled){
+    NSString *savedConsent = [[NSUserDefaults standardUserDefaults] objectForKey:PB_GDPR_ConsentString] ? [[NSUserDefaults standardUserDefaults] objectForKey:PB_GDPR_ConsentString] : [[NSUserDefaults standardUserDefaults] objectForKey:IAB_GDPR_ConsentString];
+    return savedConsent;
+    }
+    return nil;
 }
 
 @end

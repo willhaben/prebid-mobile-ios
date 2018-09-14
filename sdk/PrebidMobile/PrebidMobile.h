@@ -1,4 +1,4 @@
-/*   Copyright 2017 APPNEXUS INC
+/*   Copyright 2017 Prebid.org, Inc.
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -13,8 +13,10 @@
  limitations under the License.
  */
 
+#import "PBBidManager.h"
+#import "PBHost.h"
 #import <UIKit/UIKit.h>
-#import "PBLogging.h"
+@import Foundation.NSString;
 
 @class PBAdUnit;
 
@@ -24,14 +26,12 @@
  * This method allows the developer to register the ad units created for Prebid Mobile
  * @param adUnits : Array of AdUnits that can be registered
  * @param accountId : Prebid server accountId
+ * @param host : Prebid server host
+ * @param adServer : Primary ad server - needed to determine optimal bid caching
  */
-+ (void)registerAdUnits:(nonnull NSArray<PBAdUnit *> *)adUnits withAccountId:(nonnull NSString *)accountId;
-
-+ (void)setBidKeywordsOnAdObject:(nonnull id)adObject withAdUnitId:(nonnull NSString *)adUnitId;
-
-+ (void)setBidKeywordsOnAdObject:(nonnull id)adObject
-                    withAdUnitId:(nonnull NSString *)adUnitIdentifier
-                     withTimeout:(int)timeoutInMilliseconds
-               completionHandler:(nullable void (^)(void))handler;
++ (void)registerAdUnits:(nonnull NSArray<PBAdUnit *> *)adUnits
+          withAccountId:(nonnull NSString *)accountId
+               withHost:(PBServerHost)host
+     andPrimaryAdServer:(PBPrimaryAdServerType)adServer;
 
 @end

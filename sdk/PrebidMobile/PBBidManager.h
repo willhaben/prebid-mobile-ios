@@ -1,11 +1,11 @@
-/*   Copyright 2017 APPNEXUS INC
- 
+/*   Copyright 2017 Prebid.org, Inc.
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,7 @@
  */
 
 #import "PBAdUnit.h"
-#import "PBServerAdapter.h"
+#import "PBHost.h"
 
 @class PBBidResponse;
 
@@ -32,10 +32,20 @@ static int const kPCAttachTopBidMaxTimeoutMS = 1500;
 + (void)resetSharedInstance;
 #endif
 
+typedef NS_ENUM(NSInteger, PBPrimaryAdServerType) {
+    PBPrimaryAdServerUnknown,
+    PBPrimaryAdServerDFP,
+    PBPrimaryAdServerMoPub,
+    PBPrimaryAdServerAdition
+};
+
 /**
- * Registers all the ad units with the prebid server account id, and starts the auction for each ad unit
+ * Registers all the ad units with the prebid server account id, host, and primary ad server and starts the auction for each ad unit
  */
-- (void)registerAdUnits:(nonnull NSArray<PBAdUnit *> *)adUnits withAccountId:(nonnull NSString *)accountId;
+- (void)registerAdUnits:(nonnull NSArray<PBAdUnit *> *)adUnits
+          withAccountId:(nonnull NSString *)accountId
+               withHost:(PBServerHost)host
+     andPrimaryAdServer:(PBPrimaryAdServerType)adServer;
 
 /**
  * Returns the ad unit for the string identifier
