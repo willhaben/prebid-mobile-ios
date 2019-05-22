@@ -36,7 +36,7 @@ typedef NS_ENUM(NSInteger, PBPrimaryAdServerType) {
     PBPrimaryAdServerUnknown,
     PBPrimaryAdServerDFP,
     PBPrimaryAdServerMoPub,
-    PBPrimaryAdServerAdition
+    PBPrimaryAdServerAppNexus
 };
 
 /**
